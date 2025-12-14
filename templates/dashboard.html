@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Key Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1e1e2f;
+            color: #fff;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        input[type=number] {
+            padding: 10px;
+            width: 200px;
+            border-radius: 5px;
+            border: none;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            background: #00ff99;
+            color: #111;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: #2c2c3e;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #444;
+            text-align: center;
+        }
+        th {
+            background: #3a3a5a;
+        }
+        .delete {
+            color: red;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .copy-btn {
+            padding: 5px 10px;
+            background: #00aaff;
+            border: none;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        function copyKey(key) {
+            navigator.clipboard.writeText(key).then(() => {
+                alert("Copied: " + key);
+            });
+        }
+        function confirmDelete(key) {
+            return confirm("Are you sure you want to delete key: " + key + "?");
+        }
+    </script>
+</head>
+<body>
+
+<h2>🔑 Key Management Dashboard</h2>
+
+<form method="POST">
+    <input type="number" name="days" placeholder="Enter Amount of Days" min="1" required>
+    <button>Generate Key</button>
+</form>
+
+<table>
+    <tr>
+        <th>Key</th>
+        <th>Expiration</th>
+        <th>Copy</th>
+        <th>Action</th>
+    </tr>
+    {% for k in keys %}
+    <tr>
+        <td>{{ k[1] }}</td>
+        <td>{{ k[3] }}</td>
+        <td><button class="copy-btn" onclick="copyKey('{{ k[1] }}')">Copy</button></td>
+        <td><a class="delete" href="/delete/{{ k[0] }}" onclick="return confirmDelete('{{ k[1] }}')">DELETE</a></td>
+    </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>
