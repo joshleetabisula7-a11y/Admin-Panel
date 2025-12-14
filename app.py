@@ -9,8 +9,7 @@ app = Flask(__name__)
 DATABASE_URL = "postgresql://bot_database_2lmf_user:JS732kEmaD8szWfLbfcX6C1xVj7bxcC9@dpg-d4v5o2umcj7s73dg52u0-a.oregon-postgres.render.com/bot_database_2lmf"
 
 def db():
-    conn = psycopg2.connect(DATABASE_URL, sslmode="require")
-    return conn
+    return psycopg2.connect(DATABASE_URL, sslmode="require")
 
 def create_table():
     conn = db()
@@ -19,7 +18,7 @@ def create_table():
     CREATE TABLE IF NOT EXISTS keys (
         id SERIAL PRIMARY KEY,
         key TEXT UNIQUE NOT NULL,
-        expires_at TIMESTAMP NOT NULL,
+        expires TIMESTAMP NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     """)
@@ -33,13 +32,13 @@ def generate_key():
 def delete_expired_keys():
     conn = db()
     cur = conn.cursor()
-    cur.execute("DELETE FROM keys WHERE expires_at < NOW()")
+    cur.execute("DELETE FROM keys WHERE expires < NOW()")
     conn.commit()
     cur.close()
     conn.close()
 
-def get_friendly_expiration(expires_at):
-    delta = expires_at - datetime.now()
+def get_friendly_expiration(expires):
+    delta = expires - datetime.now()
     days = delta.days
     if days < 0:
         return "Expired"
@@ -65,7 +64,7 @@ def dashboard():
         conn = db()
         cur = conn.cursor()
         cur.execute(
-            "INSERT INTO keys (key, expires_at) VALUES (%s, %s)",
+            "INSERT INTO keys (key, expires) VALUES (%s, %s)",
             (key, expires)
         )
         conn.commit()
@@ -75,7 +74,7 @@ def dashboard():
 
     conn = db()
     cur = conn.cursor()
-    cur.execute("SELECT id, key, expires_at FROM keys ORDER BY created_at DESC")
+    cur.execute("SELECT id, key, expires FROM keys ORDER BY created_at DESC")
     keys = cur.fetchall()
     cur.close()
     conn.close()
