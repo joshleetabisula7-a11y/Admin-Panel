@@ -14,12 +14,12 @@ def db():
 def create_table():
     conn = db()
     cur = conn.cursor()
+    # Adjust table to match your existing structure if needed
     cur.execute("""
     CREATE TABLE IF NOT EXISTS keys (
-        id SERIAL PRIMARY KEY,
         key TEXT UNIQUE NOT NULL,
         expires TIMESTAMP NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     """)
     conn.commit()
@@ -74,22 +74,22 @@ def dashboard():
 
     conn = db()
     cur = conn.cursor()
-    cur.execute("SELECT id, key, expires FROM keys ORDER BY created_at DESC")
+    cur.execute("SELECT key, expires, created FROM keys ORDER BY created DESC")
     keys = cur.fetchall()
     cur.close()
     conn.close()
 
-    # Format expiration
-    keys = [(k[0], k[1], k[2], get_friendly_expiration(k[2])) for k in keys]
+    # Add index for display and format expiration
+    keys = [(i+1, k[0], k[1], get_friendly_expiration(k[1])) for i, k in enumerate(keys)]
 
     return render_template("dashboard.html", keys=keys)
 
 # ================= DELETE KEY =================
-@app.route("/delete/<int:key_id>")
-def delete_key(key_id):
+@app.route("/delete/<key>")
+def delete_key(key):
     conn = db()
     cur = conn.cursor()
-    cur.execute("DELETE FROM keys WHERE id=%s", (key_id,))
+    cur.execute("DELETE FROM keys WHERE key=%s", (key,))
     conn.commit()
     cur.close()
     conn.close()
