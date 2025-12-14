@@ -83,6 +83,7 @@
 
 <table>
     <tr>
+        <th>#</th>
         <th>Key</th>
         <th>Expiration</th>
         <th>Copy</th>
@@ -90,10 +91,11 @@
     </tr>
     {% for k in keys %}
     <tr>
+        <td>{{ k[0] }}</td>
         <td>{{ k[1] }}</td>
         <td>{{ k[3] }}</td>
         <td><button class="copy-btn" onclick="copyKey('{{ k[1] }}')">Copy</button></td>
-        <td><a class="delete" href="/delete/{{ k[0] }}" onclick="return confirmDelete('{{ k[1] }}')">DELETE</a></td>
+        <td><a class="delete" href="/delete/{{ k[1] }}" onclick="return confirmDelete('{{ k[1] }}')">DELETE</a></td>
     </tr>
     {% endfor %}
 </table>
